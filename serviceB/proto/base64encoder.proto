@@ -1,0 +1,15 @@
+syntax = "proto3";
+package base64encoder;
+
+service Base64Encoder {
+    // Our SayHello rpc accepts HelloRequests and returns HelloReplies
+    rpc Base64Encode (Base64EncodeRequest) returns (Base64EncodeReply);
+}
+
+message Base64EncodeRequest {
+    string message = 1;
+}
+
+message Base64EncodeReply {
+    string message = 1;
+}
