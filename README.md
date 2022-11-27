@@ -174,11 +174,15 @@ serviceB
 
 - serviceB/proto/base64encoder.proto
 
+中身: https://github.com/mzsima/learn_microservice/blob/lesson2/serviceB/proto/base64encoder.proto
+
 #### proto build用のソースを下記のファイルに書き込む
 
 ここは、tonic-build用のソース。詳しくはここ https://github.com/hyperium/tonic/blob/master/tonic-build/README.md
 
 - serviceB/build.rs
+
+中身: https://github.com/mzsima/learn_microservice/blob/lesson2/serviceB/build.rs
 
 #### server
 
@@ -186,11 +190,15 @@ serviceB
 
 - src/server.rs　
 
+中身: https://github.com/mzsima/learn_microservice/blob/lesson2/serviceB/src/server.rs
+
 #### client
 
 下記ファイルにクライアント側の実装を。
 
 - src/client.rs
+
+中身: https://github.com/mzsima/learn_microservice/blob/lesson2/serviceB/src/client.rs
 
 #### 動作確認
 
