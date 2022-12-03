@@ -217,3 +217,58 @@ cargo run --bin serviceb-client
 ```console
 RESPONSEResponse { metadata: MetadataMap { headers: {"content-type": "application/grpc", "date": "Sat, 26 Nov 2022 14:26:25 GMT", "grpc-status": "0"} }, message: Base64EncodeReply { message: "bXpzaW1h" }, extensions: Extensions }
 ```
+
+
+## Goコンテナ化
+
+ - ソースは、lesson3のブランチを参照。
+
+serviceAとserviceBをコンテナ化してdocker上で動かします。
+
+### DockerFileを作成
+
+こんな感じで、サイズ小さめのimageを作成する。
+
+```Dockerfile
+FROM golang:alpine AS builder
+WORKDIR /build
+COPY . .
+RUN go build -o serviceA greeter_server/main.go
+FROM alpine
+WORKDIR /build
+COPY --from=builder /build/serviceA /build/serviceA
+CMD ["./serviceA"]
+```
+
+### docker imageのビルド
+
+```sh
+docker build -t service-a . 
+```
+
+### docker imageの確認
+
+このコマンドで、service-aのイメージができているか確認
+
+```sh
+docker images | grep service-a
+```
+
+```console
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+service-a    latest    ac1bb1930122   41 seconds ago   19.4MB
+```
+
+### 実行
+
+```sh
+docker run --rm -p 50051:50051 -d service-a
+```
+
+### 動作確認
+
+ここは、goのgreeter_clientを使って接続確認　（lesson1を参考に）
+
+```sh
+go run greeter_client/main.go
+```
