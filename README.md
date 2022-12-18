@@ -272,3 +272,68 @@ docker run --rm -p 50051:50051 -d service-a
 ```sh
 go run greeter_client/main.go
 ```
+
+## Rustコンテナ化
+
+ - ソースは、lesson4のブランチを参照。
+
+serviceBをコンテナ化してdocker上で動かします。
+
+### DockerFileを作成
+
+こんな感じで、サイズ小さめのimageを作成する。
+
+```Dockerfile
+FROM rust:1.61.0 as builder
+
+ENV PROTOBUF_VERSION=21.12
+
+# protocのダウンロード
+WORKDIR /tmp/protoc
+RUN curl -L https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOBUF_VERSION}/protoc-${PROTOBUF_VERSION}-linux-aarch_64.zip -o protoc.zip && \
+  unzip protoc.zip && \
+  mv bin/* /usr/local/bin/ && \
+  mv include/* /usr/local/include/
+
+WORKDIR /usr/src/myapp
+COPY . .
+RUN cargo build --release
+
+FROM debian:buster-slim
+RUN apt-get update && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /usr/src/myapp/target/release/service_b /usr/local/bin/service_b
+CMD ["service_b"]
+```
+
+### docker imageのビルド
+
+```sh
+docker build -t service-b . 
+```
+
+### docker imageの確認
+
+このコマンドで、service-aのイメージができているか確認
+
+```sh
+docker images | grep service-b
+```
+
+```console
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+service-b    latest    fd949fe676c4   13 minutes ago   67.4MB
+```
+
+### 実行
+
+```sh
+docker run --rm -p 50051:50051 -d service-b
+```
+
+### 動作確認
+
+ここは、rustのserviceb-clientを使って接続確認　（lesson2を参考に）
+
+```sh
+cargo run --bin serviceb-client
+```
